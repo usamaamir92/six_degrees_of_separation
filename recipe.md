@@ -11,51 +11,39 @@ Some basic API call methods will first be required to get movie/actor ids from s
 
 ---------------
 Function:
-Get actor id from search string
+Get actor/movie id from search string
 
 Arguments:
 Search string
 
 Returns:
-Actor id if actor exists
-Error "No actor found" if error
+Actor/movie id if actor exists
+Error "No actor/movie found" if error
 ---------------
 
 
 ---------------
 Function:
-Get movie id from search string
+Get actor/movie name from id
 
 Arguments:
-Search string
+actor/movie id
 
 Returns:
-Movie id if movie exists
-Error "No movie found" if error
+Actor/movie name if exists
+Error "No actor/movie found" if error
 ---------------
 
+Next, we will need to get a list of movies for a given actor id. Movie details (title) and credits both take movie id as input, so we will output movies as ids.
 
 ---------------
 Function:
-Get actor name from actor id
+Get list of movie ids for actor id.
 
 Arguments:
 actor id
 
 Returns:
-Actor name if actor exists
-Error "No actor found" if error
----------------
-
-
----------------
-Function:
-Get movie name from movie id
-
-Arguments:
-movie id
-
-Returns:
-Movie name if movie exists
-Error "No movie found" if error
+List of movie ids
+Error "No movies found" if error
 ---------------
