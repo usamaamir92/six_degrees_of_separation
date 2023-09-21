@@ -34,8 +34,9 @@ Actor/movie name if exists
 Error "No actor/movie found" if error
 ---------------
 
-Next, we will need to get a list of movies for a given actor id. Movie details (title) and credits both take movie id as input, so we will output movies as ids.
 
+
+Next, we will need to get a list of movies for a given actor id. Movie details (title) and credits both take movie id as input, so we will output movies as ids.
 ---------------
 Function:
 Get list of movie ids for actor id.
@@ -46,4 +47,19 @@ actor id
 Returns:
 List of movie ids
 Error "No movies found" if error
+---------------
+
+
+
+Get list of actor ids from movie id.
+---------------
+Function:
+Get list of actor ids for movie id.
+
+Arguments:
+movie id
+
+Returns:
+List of actor ids
+Error "No actors found" if error
 ---------------

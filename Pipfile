@@ -9,6 +9,7 @@ aiohttp = "*"
 asyncio = "*"
 pytest-asyncio = "*"
 flask = "*"
+requests = "*"
 
 [dev-packages]
 
