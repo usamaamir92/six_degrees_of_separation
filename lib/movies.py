@@ -34,16 +34,6 @@ async def get_movie_title_from_movie_id(movie_id):
 
         movie_title = data["title"]
         return movie_title
-
-
-
-async def get_list_of_movie_ids_from_actor_id(actor_id):
-    async with aiohttp.ClientSession() as session:
-        url = f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?language=en-US"
-        data = await fetch(session, url)
-
-        list_of_movie_ids = [movie["id"] for movie in data["cast"] if "title" in movie.keys()]
-        return list_of_movie_ids
         
 
 
@@ -57,5 +47,5 @@ async def get_list_of_actor_ids_from_movie_id(movie_id):
 
 
 # loop = asyncio.get_event_loop()
-# print(loop.run_until_complete(get_movie_id_from_search_string("Fight Club")))
+# # print(loop.run_until_complete(get_movie_id_from_search_string("Fight Club")))
 # print(loop.run_until_complete(get_list_of_actor_ids_from_movie_id(297)))

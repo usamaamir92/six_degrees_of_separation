@@ -63,3 +63,15 @@ Returns:
 List of actor ids
 Error "No actors found" if error
 ---------------
+
+
+
+if actor2 in associated actors array:
+check common movie => for movie in actor1 movies, if actor2 in cast:
+return [movie, actor]
+
+
+if actor2 not in associated actors array:
+for actor in associated actors:
+check common movie => for movie in associatedactor1 movies, if actor2 in cast:
+return [movie, actor]

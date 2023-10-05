@@ -28,13 +28,6 @@ async def test_get_movie_title_from_movie_id_function():
 
 
 @pytest.mark.asyncio
-async def test_get_list_of_movie_ids_from_actor_id_function():
-      list_of_movie_ids = await get_list_of_movie_ids_from_actor_id(287)
-      assert list_of_movie_ids[0:6] == [297, 652, 787, 978, 1164, 4512]
-
-
-
-@pytest.mark.asyncio
 async def test_get_list_of_actor_ids_from_movie_id():
       list_of_actor_ids = await get_list_of_actor_ids_from_movie_id(297)
       assert list_of_actor_ids == [287, 4173, 4174, 4177, 

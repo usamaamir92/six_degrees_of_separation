@@ -32,5 +32,13 @@ async def get_actor_name_from_actor_id(actor_id):
 
         actor_name = data["name"]
         return actor_name
-        
+    
 
+
+async def get_list_of_movie_ids_from_actor_id(actor_id):
+    async with aiohttp.ClientSession() as session:
+        url = f"https://api.themoviedb.org/3/person/{actor_id}/movie_credits?language=en-US"
+        data = await fetch(session, url)
+
+        list_of_movie_ids = [movie["id"] for movie in data["cast"] if "title" in movie.keys()]
+        return list_of_movie_ids
