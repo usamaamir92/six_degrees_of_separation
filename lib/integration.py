@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
-from lib.actors import *
-from lib.movies import *
+from actors import *
+from movies import *
 
 access_token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMTM5Nzc4MmRmZTJjZjM4NzAwNGE3NjdkMDg5MGNlZiIsInN1YiI6IjY1MDcwNmU4MTA5ZGVjMDE0ZjQxNDliZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.LCy0P7IlTe_dQ_s4cHj6Lw2ruwVGoM-RTqeRsofcyD8"
 headers = {"Authorization": f"Bearer {access_token}"}
@@ -70,8 +70,6 @@ async def find_common_movie_title(actor1_id, actor2_id):
             if actor2_id in actors_in_movie:
                 common_movie_title = await get_movie_title_from_movie_id(movie_id)
                 return common_movie_title
-            else:
-                return "No common movie!"
         return None
     
 #Test
@@ -80,23 +78,29 @@ async def find_common_movie_title(actor1_id, actor2_id):
 
 async def find_actors_link(actor1_id, actor2_id, chain=[], depth=0):
     if depth > 1:
-        return "No common movies in 2 links"
+        return "No common movies in 2 link(s)"
     
     async with aiohttp.ClientSession() as session:
         actor1_name = await get_actor_name_from_actor_id(actor1_id)
         actor2_name = await get_actor_name_from_actor_id(actor2_id)
 
         common_movie = await find_common_movie_title(actor1_id, actor2_id)
-        if common_movie != None:
+        if common_movie:
             chain.extend([actor1_name, common_movie, actor2_name])
             return chain
+        
         associated_actors = await get_associated_actors_for_actor_id(actor1_id)
-        for actor_id in associated_actors:
-            return await find_actors_link(actor_id, actor2_id, depth+1)
+        # print(associated_actors[0:1])
+        # print(len(associated_actors))
+        for actor_id in associated_actors[0:1]:
+            result = await find_actors_link(actor_id, actor2_id, chain, depth+1)
+            return result
+
 
 
 loop = asyncio.get_event_loop()
 # print(loop.run_until_complete(get_movie_id_from_search_string("Fight Club")))
-print(loop.run_until_complete(get_list_of_movie_ids_from_actor_id(287)))
-print(loop.run_until_complete(get_list_of_actor_ids_from_movie_id(297)))
-print(loop.run_until_complete(get_associated_actors_for_actor_id(287)))
+# print(loop.run_until_complete(get_list_of_movie_ids_from_actor_id(287)))
+# print(loop.run_until_complete(get_list_of_actor_ids_from_movie_id(297)))
+# print(loop.run_until_complete(get_associated_actors_for_actor_id(287)))
+print(loop.run_until_complete(find_actors_link(287,297)))

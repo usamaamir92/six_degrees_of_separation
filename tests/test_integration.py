@@ -22,10 +22,10 @@ async def test_find_common_movie_function():
 
 
 @pytest.mark.asyncio
-async def test_find_common_movie_function():
+async def test_find_common_movie_function_no_common_movie():
     # 287 = Brad Pitt, 4173 = Anthony Hopkins
     common_movie = await find_common_movie_title(287,1158)
-    assert common_movie == 'No common movie!'
+    assert not common_movie
 
 
 # @pytest.mark.asyncio
@@ -34,10 +34,10 @@ async def test_find_common_movie_function():
 #     assert common_movie == True
 
 
-# @pytest.mark.asyncio
-# async def test_find_actors_link():
-#     common_movie = await find_actors_link(287,1159)
-#     assert common_movie == ['Brad Pitt', 'Meet Joe Black', 'Anthony Hopkins']
+@pytest.mark.asyncio
+async def test_find_actors_link():
+    common_movie = await find_actors_link(287,1159)
+    assert common_movie == ['Brad Pitt', 'Meet Joe Black', 'Anthony Hopkins']
 
 
 
