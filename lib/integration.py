@@ -12,20 +12,18 @@ async def fetch(session, url):
             raise Exception(f"Failed to fetch data. Status code: {response.status}")        
         return await response.json()
 
-
-
+    
 async def get_associated_actors_for_actor_id(actor_id):
     async with aiohttp.ClientSession() as session:
-        associated_actors = []
-
         movies_list = await get_list_of_movie_ids_from_actor_id(actor_id)
-        for movie in movies_list:
-            actors = await get_list_of_actor_ids_from_movie_id(movie)
-            associated_actors.extend(actors)
-        
-        associated_actors =list(set(associated_actors))
+
+        # Fetch associated actors concurrently
+        tasks = [get_list_of_actor_ids_from_movie_id(movie) for movie in movies_list]
+        actors_lists = await asyncio.gather(*tasks)
+
+        # Flatten list and remove duplicates
+        associated_actors = list(set(actor for actors_list in actors_lists for actor in actors_list))
         return associated_actors
-# Get nth order associated actors?
 
 
 async def is_common_movie(actor1_id, actor2_id):
@@ -35,24 +33,6 @@ async def is_common_movie(actor1_id, actor2_id):
             return True
         else:
             return False
-
-
-
-# async def find_common_movie(actor1_id, actor2_id):
-#     async with aiohttp.ClientSession() as session:
-#         actor1_name = await get_actor_name_from_actor_id(actor1_id)
-#         actor2_name = await get_actor_name_from_actor_id(actor2_id)
-
-#         # chain = []
-#         if await is_common_movie(actor1_id,actor2_id) == True:
-#             actor1_movies = await get_list_of_movie_ids_from_actor_id(actor1_id)
-#             for movie_id in actor1_movies:
-#                 actors_in_movie = await get_list_of_actor_ids_from_movie_id(movie_id)
-#                 if actor2_id in actors_in_movie:
-#                     common_movie_title = await get_movie_title_from_movie_id(movie_id)
-#                     return common_movie_title
-#         else:
-#             return "No common movies!"
     
 
 # async def find_actors_link(actor1_id, actor2_id):
@@ -90,6 +70,8 @@ async def find_common_movie_title(actor1_id, actor2_id):
             if actor2_id in actors_in_movie:
                 common_movie_title = await get_movie_title_from_movie_id(movie_id)
                 return common_movie_title
+            else:
+                return "No common movie!"
         return None
 
 
