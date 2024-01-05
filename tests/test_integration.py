@@ -22,15 +22,15 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_find_common_movie_function():
-    common_movie = await find_common_movie(287,4173)
+    common_movie = await find_common_movie_title(287,4173)
     assert common_movie == ['Brad Pitt', 'Meet Joe Black', 'Anthony Hopkins']
 
 
 
 
 @pytest.mark.asyncio
-async def test_find_common_movie_function():
-    common_movie = await find_common_movie(287,1159)
+async def test_find_actors_link():
+    common_movie = await find_actors_link(287,1159)
     assert common_movie == ['Brad Pitt', 'Meet Joe Black', 'Anthony Hopkins']
 
 

@@ -25,17 +25,16 @@ async def get_associated_actors_for_actor_id(actor_id):
         
         associated_actors =list(set(associated_actors))
         return associated_actors
-    
+# Get nth order associated actors?
 
 
 async def is_common_movie(actor1_id, actor2_id):
     async with aiohttp.ClientSession() as session:
-        actor1_movies = await get_list_of_movie_ids_from_actor_id(actor1_id)
-        for movie_id in actor1_movies:
-            actors_in_movie = await get_list_of_actor_ids_from_movie_id(movie_id)
-            if actor2_id in actors_in_movie:
-                return True
-        return False
+        actor1_associated_actors = await get_associated_actors_for_actor_id(actor1_id)
+        if actor2_id in actor1_associated_actors:
+            return True
+        else:
+            return False
 
 
 
@@ -56,52 +55,60 @@ async def is_common_movie(actor1_id, actor2_id):
 #             return "No common movies!"
     
 
-async def find_actors_link(actor1_id, actor2_id):
+# async def find_actors_link(actor1_id, actor2_id):
+#     async with aiohttp.ClientSession() as session:
+#         associated_actors = await get_associated_actors_for_actor_id(actor1_id)
+#         if actor2_id in associated_actors:
+#             return "X and Y both star in Z"
+#         for actor in associated_actors:
+#             return 
+
+
+
+# async def find_common_movie(actor1_id, actor2_id, depth=0):
+#     async with aiohttp.ClientSession() as session:
+#         actor1_name = await get_actor_name_from_actor_id(actor1_id)
+#         actor2_name = await get_actor_name_from_actor_id(actor2_id)
+
+#         order1_associated_actors = await get_associated_actors_for_actor_id(actor1_id)
+#         if actor2_id in order1_associated_actors:
+#             return "Yes"
+#         else:
+#             order2_associated_actors = []
+#             for actor in order1_associated_actors:
+#                 order2_associated_actors.append(await get_associated_actors_for_actor_id(actor))
+#             # order2_associated_actors = list((order2_associated_actors)
+#             return order2_associated_actors
+
+
+async def find_common_movie_title(actor1_id, actor2_id):
     async with aiohttp.ClientSession() as session:
-        associated_actors = await get_associated_actors_for_actor_id(actor1_id)
-        if actor2_id in associated_actors:
-            return "X and Y both star in Z"
-        for actor in associated_actors:
-            return 
-
-
-
-async def find_common_movie(actor1_id, actor2_id, depth=0):
-    if depth > 2:
-        return "No common movies"
-
-    async with aiohttp.ClientSession() as session:
-        actor1_name = await get_actor_name_from_actor_id(actor1_id)
-        actor2_name = await get_actor_name_from_actor_id(actor2_id)
-
-        # chain = []
 
         actor1_movies = await get_list_of_movie_ids_from_actor_id(actor1_id)
         for movie_id in actor1_movies:
             actors_in_movie = await get_list_of_actor_ids_from_movie_id(movie_id)
-            print(actors_in_movie)
             if actor2_id in actors_in_movie:
                 common_movie_title = await get_movie_title_from_movie_id(movie_id)
                 return common_movie_title
-                # chain.append([actor1_name, common_movie_title, actor2_name])
-                # if len(chain) > 0:
-                    # break
-        
+        return None
+
+
+
+async def find_actors_link(actor1_id, actor2_id, chain=[], depth=0):
+    if depth > 1:
+        return "No common movies in 2 links"
+    
+    async with aiohttp.ClientSession() as session:
+        actor1_name = await get_actor_name_from_actor_id(actor1_id)
+        actor2_name = await get_actor_name_from_actor_id(actor2_id)
+
+        common_movie = await find_common_movie_title(actor1_id, actor2_id)
+        if common_movie != None:
+            chain.extend([actor1_name, common_movie, actor2_name])
+            return chain
         associated_actors = await get_associated_actors_for_actor_id(actor1_id)
         for actor_id in associated_actors:
-            result = await find_common_movie(actor_id, actor2_id, depth + 1)
-            if result != "No common movies":
-                return result
-            
-        return "No common movies"
-        # return "No common movie"
-        # if len(chain) == 0:
-        #     associated_actors = await get_associated_actors_for_actor_id(actor1_id)
-        #     for actor_id in associated_actors:
-        #         await find_common_movie(actor_id, actor2_id)
-
-        # return common_movie_title
-    
+            return await find_actors_link(actor_id, actor2_id, depth+1)
 
 
 loop = asyncio.get_event_loop()
