@@ -23,6 +23,7 @@ async def get_associated_actors_for_actor_id(actor_id):
 
         # Flatten list and remove duplicates
         associated_actors = list(set(actor for actors_list in actors_lists for actor in actors_list))
+        associated_actors.remove(actor_id)
         return associated_actors
 
 
@@ -76,31 +77,53 @@ async def find_common_movie_title(actor1_id, actor2_id):
 
 
 
-async def find_actors_link(actor1_id, actor2_id, chain=[], depth=0):
-    if depth > 1:
-        return "No common movies in 2 link(s)"
-    
+async def find_actors_link(actor1_id, actor2_id, chain=[], depth=0, chain_movie=""):
     async with aiohttp.ClientSession() as session:
         actor1_name = await get_actor_name_from_actor_id(actor1_id)
         actor2_name = await get_actor_name_from_actor_id(actor2_id)
 
+        if depth > 0:
+            chain.extend([chain_movie, actor1_name])
+        else:
+            chain.extend([actor1_name])
+
+        if depth > 2:
+            return f'No common movies in 3 links between {actor1_name} and {actor2_name}'
+
+
         common_movie = await find_common_movie_title(actor1_id, actor2_id)
         if common_movie:
-            chain.extend([actor1_name, common_movie, actor2_name])
+            chain.extend([common_movie, actor2_name])
             return chain
         
         associated_actors = await get_associated_actors_for_actor_id(actor1_id)
         # print(associated_actors[0:1])
         # print(len(associated_actors))
-        for actor_id in associated_actors[0:1]:
-            result = await find_actors_link(actor_id, actor2_id, chain, depth+1)
-            return result
 
+        for actor_id in associated_actors[0:1]:
+            chain_movie = await find_common_movie_title(actor1_id, actor_id)
+            result = await find_actors_link(actor_id, actor2_id, chain, depth+1, chain_movie)
+            return result
 
 
 loop = asyncio.get_event_loop()
 # print(loop.run_until_complete(get_movie_id_from_search_string("Fight Club")))
 # print(loop.run_until_complete(get_list_of_movie_ids_from_actor_id(287)))
 # print(loop.run_until_complete(get_list_of_actor_ids_from_movie_id(297)))
-# print(loop.run_until_complete(get_associated_actors_for_actor_id(287)))
-print(loop.run_until_complete(find_actors_link(287,297)))
+# print(loop.run_until_complete(get_associated_actors_for_actor_id(3793629)))
+# print(loop.run_until_complete(get_associated_actors_for_actor_id(112099)))
+
+#  Associated actor chain 287 -> 1163266 -> 1392647
+
+#  2nd order actor chain 288 -> 8192 -> 2 -> 
+
+# print(loop.run_until_complete(find_actors_link(288, 2)))
+print(loop.run_until_complete(find_actors_link(288, 2464)))
+
+# ant_hopkins_movies = loop.run_until_complete(get_associated_actors_for_actor_id(4173))
+# for actor in ant_hopkins_movies:
+#     chain = loop.run_until_complete(find_actors_link(287, actor))
+#     print(chain)
+#     if type(chain) == list and len(chain) > 6:
+#         break
+    
